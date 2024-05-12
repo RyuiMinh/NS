@@ -14,4 +14,4 @@ echo Your VNC IP Address:
 curl --silent --show-error http://127.0.0.1:4040/api/tunnels | sed -nE 's/.*public_url":"tcp:..([^"]*).*/\1/p'
 echo Script by fb.me/LeVuHg
 echo Starting Windows...
-sudo qemu-system-x86_64 -vnc :0 -hda w10x64.img -smp cores=2 -m 2012M -machine usb=on -device usb-tablet
+sudo qemu-system-x86_64 -vnc :0 -hda w10x64.img -smp cores=1 -m 2012M -machine usb=on -device usb-tablet
