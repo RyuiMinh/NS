@@ -7,7 +7,7 @@ if [ ! -f "ngrok" ]; then
     tar -zxvf ngrok.tgz
 fi
 if ! grep -q "authtoken: 2caMIyH98jojFijfUDA9HHKZDZ0_2naziucGo1SjGJ4xWL8QM" ~/.ngrok2/ngrok.yml 2>/dev/null; then
-    ./ngrok config add-authtoken 2caMIyH98jojFijfUDA9HHKZDZ0_2naziucGo1SjGJ4xWL8QM
+    ./ngrok authtoken 2caMIyH98jojFijfUDA9HHKZDZ0_2naziucGo1SjGJ4xWL8QM
 fi
 if ! pgrep -f "ngrok tcp 5900" > /dev/null; then
     ./ngrok tcp 5900 --region ap &>/dev/null &
