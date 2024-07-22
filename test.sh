@@ -16,7 +16,7 @@ echo Please wait for installing...
 echo "Installing QEMU (2-3m)..."
 echo Downloading Windows Disk...
 if [ ! -f "lite7.qcow2" ]; then
-    curl -L -o https://app.vagrantup.com/thuonghai2711/boxes/WindowsQCOW2/versions/1.0.3/providers/qemu.box
+    curl -L -o lite7.qcow2 https://app.vagrantup.com/thuonghai2711/boxes/WindowsQCOW2/versions/1.0.3/providers/qemu.box
 fi
 echo "Windows 7 x86 Lite"
 echo Your VNC IP Address:
