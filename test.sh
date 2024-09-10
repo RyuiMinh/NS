@@ -1,27 +1,52 @@
-#!/bin/bash
-sudo apt update -y
-sudo apt install -y qemu-system-x86 wget curl neofetch
+# Đặt giá trị colab (True nếu đang chạy trong môi trường Colab, False nếu không)
+colab=false
 
-if [ ! -f "ngrok" ]; then
-    wget -O ngrok.tgz https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
-    tar -zxvf ngrok.tgz
+# Nếu colab = true, tạo folder và thiết lập đường dẫn lưu ảnh
+if $colab; then
+    IMG_DIR="/content/drive/MyDrive/img/win"
+    if [ ! -d "$IMG_DIR" ]; then
+        echo "Creating directory $IMG_DIR..."
+        mkdir -p "$IMG_DIR"
+    fi
+    IMG_PATH="$IMG_DIR/w10x64.img"
+else
+    IMG_PATH="w10x64.img"
 fi
-if ! grep -q "authtoken: 2caMIyH98jojFijfUDA9HHKZDZ0_2naziucGo1SjGJ4xWL8QM" ~/.ngrok2/ngrok.yml 2>/dev/null; then
-    ./ngrok authtoken 2caMIyH98jojFijfUDA9HHKZDZ0_2naziucGo1SjGJ4xWL8QM
+
+# Kiểm tra và tải ngrok nếu chưa có
+if [ ! -f "ngrok-v3-stable-linux-amd64.tgz" ]; then
+    echo "Downloading Ngrok..."
+    wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+    tar -xvzf ngrok-v3-stable-linux-amd64.tgz
 fi
-if ! pgrep -f "ngrok tcp 5900" > /dev/null; then
-    ./ngrok tcp 5900 --region ap &>/dev/null &
+
+# Đăng ký authtoken ngrok
+if [ ! -f "./ngrok" ]; then
+    tar -xvzf ngrok-v3-stable-linux-amd64.tgz
 fi
-echo "Please wait for installing..."
-echo "Installing QEMU (2-3m)..."
-echo "Downloading Windows Disk..."
-if [ ! -f "lite7.qcow2" ]; then
-    curl -L -o lite7.qcow2 https://app.vagrantup.com/thuonghai2711/boxes/WindowsQCOW2/versions/1.0.3/providers/qemu.box
+./ngrok authtoken 2caMIyH98jojFijfUDA9HHKZDZ0_2naziucGo1SjGJ4xWL8QM
+nohup ./ngrok tcp 5900 &>/dev/null &
+
+echo "Ngrok Connect!"
+echo "-------------------------------"
+
+# Cập nhật hệ thống
+sudo apt update -y > /dev/null 2>&1
+echo "Installing QEMU..."
+sudo apt install qemu-system-x86 curl -y > /dev/null 2>&1
+
+# Kiểm tra và tải đĩa Windows nếu chưa có
+if [ ! -f "$IMG_PATH" ]; then
+    echo "Downloading Windows Disk..."
+    curl -L -o "$IMG_PATH" https://bit.ly/akuhnetW10x64
 fi
-echo "Windows 7 x86 Lite"
+
+echo "Windows 10 x64 Lite"
 echo "Your VNC IP Address:"
 curl --silent --show-error http://127.0.0.1:4040/api/tunnels | sed -nE 's/.*public_url":"tcp:..([^"]*).*/\1/p'
-echo "===================="
-echo    "Script by CAAT"
-echo "===================="
-sudo qemu-system-x86_64 -vnc :0 -hda lite7.qcow2  -smp cores=2  -m 8192M -machine usb=on -device usb-tablet > /dev/null 2>&1
+
+echo "Script by fb.me/LeVuHg"
+echo "Starting Windows..."
+
+# Khởi động QEMU với Windows
+sudo qemu-system-x86_64 -vnc :0 -hda "$IMG_PATH" -machine usb=on -device usb-tablet -vga virtio -display default,show-cursor=on
