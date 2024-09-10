@@ -1,5 +1,5 @@
 # Đặt giá trị colab (True nếu đang chạy trong môi trường Colab, False nếu không)
-colab=false
+colab=$(if [ -d "/content" ]; then echo true; else echo false; fi)
 
 # Nếu colab = true, tạo folder và thiết lập đường dẫn lưu ảnh
 if $colab; then
